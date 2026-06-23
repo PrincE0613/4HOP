@@ -1,0 +1,2382 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>airbnb</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --bg:#f7f7f7;
+      --surface:#ffffff;
+      --surface-2:#fbfbfb;
+      --surface-3:#f1f1f1;
+      --text:#222222;
+      --text-muted:#6a6a6a;
+      --text-faint:#9c9c9c;
+      --border:#e7e7e7;
+      --border-2:#d8d8d8;
+      --accent:#ff385c;
+      --accent-dark:#e31c5f;
+      --success:#0f9d58;
+      --warning:#ffb400;
+      --dark:#0f0f10;
+      --dark-2:#161719;
+      --dark-3:#212226;
+      --shadow:0 8px 30px rgba(0,0,0,.08);
+      --shadow-lg:0 24px 60px rgba(0,0,0,.18);
+      --radius-sm:12px;
+      --radius-md:18px;
+      --radius-lg:24px;
+      --radius-xl:32px;
+      --radius-full:999px;
+      --sidebar-width:286px;
+      --content-max:1400px;
+      --transition:180ms cubic-bezier(.2,.8,.2,1);
+    }
+
+    *{box-sizing:border-box}
+    html,body{margin:0;padding:0;background:var(--bg);color:var(--text);font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif}
+    body{min-height:100vh;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+    button,input,select,textarea{font:inherit}
+    button{cursor:pointer}
+    img{display:block;max-width:100%}
+    a{text-decoration:none;color:inherit}
+
+    .app{
+      display:grid;
+      grid-template-columns:var(--sidebar-width) 1fr;
+      min-height:100vh;
+    }
+
+    .sidebar{
+      background:linear-gradient(180deg,var(--dark) 0%, #111214 100%);
+      color:#fff;
+      padding:24px 18px 18px;
+      border-right:1px solid rgba(255,255,255,.06);
+      position:sticky;
+      top:0;
+      height:100vh;
+      display:flex;
+      flex-direction:column;
+      gap:18px;
+    }
+
+    .brand{
+      display:flex;
+      align-items:center;
+      gap:12px;
+      padding:8px 10px 20px;
+      border-bottom:1px solid rgba(255,255,255,.08);
+    }
+
+    .brand-mark{
+      width:42px;
+      height:42px;
+      border-radius:14px;
+      background:linear-gradient(135deg,var(--accent),#ff6a88);
+      display:grid;
+      place-items:center;
+      box-shadow:0 10px 24px rgba(255,56,92,.28);
+      flex:0 0 auto;
+    }
+
+    .brand-mark svg{
+      width:23px;
+      height:23px;
+      color:#fff;
+    }
+
+    .brand-meta{
+      display:flex;
+      flex-direction:column;
+      gap:3px;
+    }
+
+    .brand-name{
+      font-size:18px;
+      font-weight:800;
+      letter-spacing:-.03em;
+    }
+
+    .brand-sub{
+      font-size:12px;
+      color:rgba(255,255,255,.68);
+    }
+
+    .sidebar-block{
+      background:rgba(255,255,255,.04);
+      border:1px solid rgba(255,255,255,.06);
+      border-radius:20px;
+      padding:14px;
+    }
+
+    .sidebar-label{
+      font-size:11px;
+      text-transform:uppercase;
+      letter-spacing:.12em;
+      color:rgba(255,255,255,.48);
+      margin-bottom:10px;
+    }
+
+    .nav{
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+    }
+
+    .nav-item{
+      border:none;
+      background:transparent;
+      color:rgba(255,255,255,.82);
+      display:flex;
+      align-items:center;
+      gap:12px;
+      width:100%;
+      text-align:left;
+      padding:12px 14px;
+      border-radius:16px;
+      transition:all var(--transition);
+      position:relative;
+    }
+
+    .nav-item:hover{
+      background:rgba(255,255,255,.06);
+      color:#fff;
+    }
+
+    .nav-item.active{
+      background:#fff;
+      color:#111;
+      box-shadow:var(--shadow);
+    }
+
+    .nav-item .icon{
+      width:34px;
+      height:34px;
+      border-radius:12px;
+      display:grid;
+      place-items:center;
+      font-size:15px;
+      background:rgba(255,255,255,.08);
+      flex:0 0 auto;
+    }
+
+    .nav-item.active .icon{
+      background:#f3f3f3;
+    }
+
+    .nav-text{
+      display:flex;
+      flex-direction:column;
+      gap:2px;
+    }
+
+    .nav-title{
+      font-size:14px;
+      font-weight:700;
+      letter-spacing:-.02em;
+    }
+
+    .nav-sub{
+      font-size:12px;
+      color:inherit;
+      opacity:.62;
+    }
+
+    .sidebar-tip{
+      margin-top:auto;
+      background:linear-gradient(180deg, rgba(255,56,92,.18), rgba(255,255,255,.04));
+      border:1px solid rgba(255,255,255,.08);
+      border-radius:24px;
+      padding:16px;
+    }
+
+    .tip-title{
+      font-size:14px;
+      font-weight:700;
+      margin-bottom:6px;
+    }
+
+    .tip-copy{
+      font-size:12px;
+      line-height:1.55;
+      color:rgba(255,255,255,.7);
+    }
+
+    .main{
+      min-width:0;
+      display:flex;
+      flex-direction:column;
+    }
+
+    .topbar{
+      position:sticky;
+      top:0;
+      z-index:10;
+      background:rgba(247,247,247,.9);
+      backdrop-filter:blur(12px);
+      border-bottom:1px solid var(--border);
+      padding:18px 26px;
+    }
+
+    .topbar-row{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:18px;
+      max-width:var(--content-max);
+      margin:0 auto;
+    }
+
+    .topbar-left{
+      display:flex;
+      align-items:center;
+      gap:14px;
+      min-width:0;
+    }
+
+    .mobile-menu-btn{
+      display:none;
+      width:42px;
+      height:42px;
+      border-radius:14px;
+      border:1px solid var(--border);
+      background:#fff;
+      box-shadow:var(--shadow);
+    }
+
+    .page-heading{
+      min-width:0;
+    }
+
+    .page-title{
+      font-size:24px;
+      line-height:1.1;
+      font-weight:800;
+      letter-spacing:-.04em;
+      margin:0;
+    }
+
+    .page-subtitle{
+      margin-top:6px;
+      font-size:13px;
+      color:var(--text-muted);
+    }
+
+    .topbar-right{
+      display:flex;
+      align-items:center;
+      gap:12px;
+      flex-wrap:wrap;
+      justify-content:flex-end;
+    }
+
+    .ghost-btn,.primary-btn,.soft-btn{
+      border:none;
+      border-radius:var(--radius-full);
+      padding:12px 18px;
+      font-size:14px;
+      font-weight:700;
+      transition:all var(--transition);
+    }
+
+    .ghost-btn{
+      background:#fff;
+      border:1px solid var(--border);
+      color:var(--text);
+      box-shadow:var(--shadow);
+    }
+
+    .ghost-btn:hover{transform:translateY(-1px)}
+
+    .soft-btn{
+      background:#f2f2f2;
+      color:var(--text);
+      border:1px solid transparent;
+    }
+
+    .primary-btn{
+      background:var(--accent);
+      color:#fff;
+      box-shadow:0 10px 22px rgba(255,56,92,.2);
+    }
+
+    .primary-btn:hover{
+      background:var(--accent-dark);
+      transform:translateY(-1px);
+    }
+
+    .content{
+      padding:24px 26px 120px;
+    }
+
+    .content-inner{
+      max-width:var(--content-max);
+      margin:0 auto;
+      display:flex;
+      flex-direction:column;
+      gap:22px;
+    }
+
+    .search-shell{
+      background:#fff;
+      border:1px solid var(--border);
+      box-shadow:var(--shadow);
+      border-radius:26px;
+      padding:18px;
+    }
+
+    .segment-switch{
+      display:inline-flex;
+      padding:4px;
+      background:#f3f3f3;
+      border-radius:var(--radius-full);
+      gap:4px;
+      margin-bottom:16px;
+    }
+
+    .segment-btn{
+      border:none;
+      background:transparent;
+      color:var(--text-muted);
+      padding:10px 18px;
+      font-size:14px;
+      font-weight:700;
+      border-radius:var(--radius-full);
+      transition:all var(--transition);
+    }
+
+    .segment-btn.active{
+      background:#111;
+      color:#fff;
+      box-shadow:var(--shadow);
+    }
+
+    .search-grid{
+      display:grid;
+      grid-template-columns:2fr 1.2fr 1fr 1fr auto;
+      gap:12px;
+      align-items:stretch;
+    }
+
+    .search-field{
+      background:#fff;
+      border:1px solid var(--border);
+      border-radius:20px;
+      padding:12px 14px;
+      display:flex;
+      flex-direction:column;
+      gap:6px;
+      min-width:0;
+    }
+
+    .search-field label{
+      font-size:11px;
+      text-transform:uppercase;
+      letter-spacing:.08em;
+      color:var(--text-faint);
+      font-weight:700;
+    }
+
+    .search-field input,
+    .search-field select{
+      border:none;
+      outline:none;
+      background:transparent;
+      color:var(--text);
+      font-size:14px;
+      font-weight:600;
+      min-width:0;
+    }
+
+    .search-actions{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      justify-content:flex-end;
+    }
+
+    .filter-chip-row{
+      margin-top:14px;
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+    }
+
+    .filter-chip{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      border:1px solid var(--border);
+      background:#fff;
+      border-radius:var(--radius-full);
+      padding:10px 14px;
+      font-size:13px;
+      font-weight:600;
+      color:var(--text);
+      box-shadow:0 1px 2px rgba(0,0,0,.04);
+    }
+
+    .filter-chip.active{
+      border-color:#111;
+      background:#111;
+      color:#fff;
+    }
+
+    .toolbar{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:18px;
+      flex-wrap:wrap;
+    }
+
+    .toolbar-left{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      flex-wrap:wrap;
+    }
+
+    .meta-pill{
+      background:#fff;
+      border:1px solid var(--border);
+      border-radius:var(--radius-full);
+      padding:10px 14px;
+      font-size:13px;
+      font-weight:600;
+      color:var(--text-muted);
+    }
+
+    .toolbar-right{
+      display:flex;
+      align-items:center;
+      gap:12px;
+      flex-wrap:wrap;
+    }
+
+    .select-wrap{
+      background:#fff;
+      border:1px solid var(--border);
+      border-radius:var(--radius-full);
+      padding:0 14px;
+      height:42px;
+      display:flex;
+      align-items:center;
+    }
+
+    .select-wrap select{
+      border:none;
+      background:transparent;
+      outline:none;
+      font-size:13px;
+      font-weight:700;
+      color:var(--text);
+    }
+
+    .module{
+      display:none;
+    }
+
+    .module.active{
+      display:block;
+    }
+
+    .cards-grid{
+      display:grid;
+      grid-template-columns:repeat(3,minmax(0,1fr));
+      gap:18px;
+    }
+
+    .listing-card{
+      background:#fff;
+      border:1px solid var(--border);
+      border-radius:24px;
+      overflow:hidden;
+      transition:transform var(--transition), box-shadow var(--transition), border-color var(--transition);
+      box-shadow:0 2px 8px rgba(0,0,0,.03);
+      cursor:pointer;
+    }
+
+    .listing-card:hover{
+      transform:translateY(-3px);
+      box-shadow:var(--shadow);
+      border-color:var(--border-2);
+    }
+
+    .listing-media{
+      position:relative;
+      aspect-ratio:1.15/1;
+      background:
+        linear-gradient(145deg, rgba(255,255,255,.18), rgba(255,255,255,.02)),
+        radial-gradient(circle at 20% 20%, rgba(255,255,255,.26), transparent 45%),
+        linear-gradient(135deg, #d4d7de, #b9c2d0 50%, #d8d2cc 100%);
+      overflow:hidden;
+    }
+
+    .media-badge-row{
+      position:absolute;
+      top:14px;
+      left:14px;
+      right:14px;
+      display:flex;
+      justify-content:space-between;
+      align-items:flex-start;
+      gap:10px;
+    }
+
+    .media-badge{
+      background:rgba(255,255,255,.94);
+      color:#111;
+      border-radius:var(--radius-full);
+      padding:8px 10px;
+      font-size:11px;
+      font-weight:800;
+      letter-spacing:.02em;
+      box-shadow:var(--shadow);
+    }
+
+    .icon-circle{
+      width:36px;
+      height:36px;
+      border-radius:50%;
+      border:none;
+      background:rgba(255,255,255,.94);
+      box-shadow:var(--shadow);
+      font-size:15px;
+      display:grid;
+      place-items:center;
+    }
+
+    .media-footer{
+      position:absolute;
+      bottom:14px;
+      left:14px;
+      right:14px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+    }
+
+    .mini-photos{
+      display:flex;
+      align-items:center;
+      gap:6px;
+    }
+
+    .mini-photo{
+      width:34px;
+      height:34px;
+      border-radius:12px;
+      background:rgba(255,255,255,.84);
+      backdrop-filter:blur(8px);
+      border:1px solid rgba(255,255,255,.55);
+    }
+
+    .card-body{
+      padding:16px;
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+    }
+
+    .card-topline{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:10px;
+    }
+
+    .card-title-wrap{
+      min-width:0;
+    }
+
+    .card-kicker{
+      font-size:11px;
+      text-transform:uppercase;
+      letter-spacing:.08em;
+      color:var(--text-faint);
+      font-weight:800;
+      margin-bottom:5px;
+    }
+
+    .card-title{
+      font-size:18px;
+      font-weight:800;
+      line-height:1.2;
+      letter-spacing:-.03em;
+      margin:0;
+    }
+
+    .card-rating{
+      white-space:nowrap;
+      font-size:13px;
+      font-weight:700;
+      display:flex;
+      align-items:center;
+      gap:5px;
+    }
+
+    .card-rating .star{
+      color:#111;
+      font-size:14px;
+    }
+
+    .card-location,
+    .card-hours,
+    .card-description{
+      font-size:13px;
+      color:var(--text-muted);
+      line-height:1.5;
+    }
+
+    .card-bottom{
+      display:flex;
+      justify-content:space-between;
+      align-items:flex-end;
+      gap:12px;
+      padding-top:4px;
+    }
+
+    .price-block{
+      display:flex;
+      flex-direction:column;
+      gap:4px;
+    }
+
+    .price-main{
+      font-size:17px;
+      font-weight:800;
+      letter-spacing:-.02em;
+    }
+
+    .price-sub{
+      font-size:12px;
+      color:var(--text-muted);
+    }
+
+    .top-rated{
+      background:#111;
+      color:#fff;
+      border-radius:var(--radius-full);
+      padding:8px 10px;
+      font-size:11px;
+      font-weight:800;
+      letter-spacing:.02em;
+    }
+
+    .in-progress{
+      min-height:58vh;
+      border-radius:28px;
+      background:#000;
+      color:#fff;
+      display:grid;
+      place-items:center;
+      overflow:hidden;
+      position:relative;
+      border:1px solid rgba(255,255,255,.04);
+      box-shadow:var(--shadow-lg);
+    }
+
+    .in-progress::before{
+      content:"";
+      position:absolute;
+      inset:0;
+      background:
+        radial-gradient(circle at top right, rgba(255,56,92,.18), transparent 28%),
+        radial-gradient(circle at bottom left, rgba(255,255,255,.06), transparent 26%);
+      pointer-events:none;
+    }
+
+    .progress-card{
+      position:relative;
+      z-index:1;
+      text-align:center;
+      max-width:520px;
+      padding:28px;
+    }
+
+    .progress-title{
+      font-size:32px;
+      font-weight:800;
+      letter-spacing:-.05em;
+      margin-bottom:10px;
+    }
+
+    .progress-copy{
+      font-size:15px;
+      line-height:1.7;
+      color:rgba(255,255,255,.78);
+    }
+
+    .progress-tag{
+      margin-top:18px;
+      display:inline-flex;
+      border:1px solid rgba(255,255,255,.18);
+      border-radius:var(--radius-full);
+      padding:10px 14px;
+      font-size:12px;
+      text-transform:uppercase;
+      letter-spacing:.12em;
+      color:rgba(255,255,255,.9);
+      font-weight:700;
+    }
+
+    .requests-grid{
+      display:grid;
+      grid-template-columns:repeat(2,minmax(0,1fr));
+      gap:18px;
+    }
+
+    .request-card{
+      background:#fff;
+      border:1px solid var(--border);
+      border-radius:24px;
+      padding:18px;
+      display:flex;
+      flex-direction:column;
+      gap:14px;
+      box-shadow:0 2px 10px rgba(0,0,0,.03);
+    }
+
+    .request-header{
+      display:flex;
+      justify-content:space-between;
+      align-items:flex-start;
+      gap:12px;
+    }
+
+    .request-title{
+      font-size:18px;
+      font-weight:800;
+      letter-spacing:-.03em;
+      margin:0;
+    }
+
+    .status-badge{
+      padding:8px 12px;
+      border-radius:var(--radius-full);
+      font-size:11px;
+      font-weight:800;
+      text-transform:uppercase;
+      letter-spacing:.08em;
+      white-space:nowrap;
+    }
+
+    .status-pending{background:#fff4d5;color:#8a5b00}
+    .status-approved{background:#e6f8ee;color:#0c7d45}
+    .status-auto{background:#f1f1f1;color:#111}
+
+    .request-lines{
+      display:grid;
+      gap:8px;
+    }
+
+    .request-line{
+      display:flex;
+      justify-content:space-between;
+      gap:14px;
+      font-size:13px;
+      color:var(--text-muted);
+    }
+
+    .request-line strong{
+      color:var(--text);
+    }
+
+    .request-actions{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+    }
+
+    .drawer,
+    .modal{
+      position:fixed;
+      inset:0;
+      z-index:100;
+      display:none;
+    }
+
+    .drawer.open,
+    .modal.open{
+      display:block;
+    }
+
+    .overlay{
+      position:absolute;
+      inset:0;
+      background:rgba(0,0,0,.45);
+      backdrop-filter:blur(4px);
+    }
+
+    .drawer-panel{
+      position:absolute;
+      top:0;
+      right:0;
+      width:min(560px,100%);
+      height:100%;
+      background:#fff;
+      box-shadow:var(--shadow-lg);
+      display:flex;
+      flex-direction:column;
+      animation:slideIn .22s ease-out;
+    }
+
+    @keyframes slideIn{
+      from{transform:translateX(18px);opacity:.75}
+      to{transform:translateX(0);opacity:1}
+    }
+
+    .drawer-head{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      padding:20px 22px 14px;
+      border-bottom:1px solid var(--border);
+      position:sticky;
+      top:0;
+      background:#fff;
+      z-index:2;
+    }
+
+    .drawer-title{
+      font-size:22px;
+      font-weight:800;
+      letter-spacing:-.04em;
+      margin:0;
+    }
+
+    .drawer-sub{
+      font-size:13px;
+      color:var(--text-muted);
+      margin-top:5px;
+    }
+
+    .close-btn{
+      width:42px;
+      height:42px;
+      border:none;
+      border-radius:50%;
+      background:#f3f3f3;
+      font-size:18px;
+      font-weight:700;
+    }
+
+    .drawer-body{
+      padding:18px 22px 26px;
+      overflow:auto;
+      display:flex;
+      flex-direction:column;
+      gap:20px;
+    }
+
+    .detail-media{
+      aspect-ratio:1.25/1;
+      border-radius:24px;
+      background:
+        linear-gradient(160deg, rgba(255,255,255,.18), rgba(255,255,255,.02)),
+        radial-gradient(circle at 20% 20%, rgba(255,255,255,.28), transparent 45%),
+        linear-gradient(135deg,#dbdee5,#c6ced8 55%,#d8d2cb 100%);
+      position:relative;
+      overflow:hidden;
+    }
+
+    .detail-media-toolbar{
+      position:absolute;
+      top:14px;
+      left:14px;
+      right:14px;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+    }
+
+    .detail-media-footer{
+      position:absolute;
+      bottom:14px;
+      left:14px;
+      right:14px;
+      display:flex;
+      justify-content:space-between;
+      align-items:flex-end;
+      gap:12px;
+    }
+
+    .detail-chip{
+      background:rgba(255,255,255,.94);
+      color:#111;
+      border-radius:var(--radius-full);
+      padding:9px 12px;
+      font-size:12px;
+      font-weight:800;
+      box-shadow:var(--shadow);
+    }
+
+    .detail-grid{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:12px;
+    }
+
+    .detail-box{
+      background:#fafafa;
+      border:1px solid var(--border);
+      border-radius:18px;
+      padding:14px;
+    }
+
+    .detail-box-label{
+      font-size:11px;
+      text-transform:uppercase;
+      letter-spacing:.08em;
+      color:var(--text-faint);
+      font-weight:800;
+      margin-bottom:6px;
+    }
+
+    .detail-box-value{
+      font-size:14px;
+      color:var(--text);
+      font-weight:700;
+      line-height:1.45;
+    }
+
+    .section-title{
+      font-size:15px;
+      font-weight:800;
+      letter-spacing:-.02em;
+      margin-bottom:10px;
+    }
+
+    .section-copy{
+      font-size:14px;
+      line-height:1.7;
+      color:var(--text-muted);
+    }
+
+    .amenities{
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+    }
+
+    .amenity{
+      background:#fff;
+      border:1px solid var(--border);
+      border-radius:var(--radius-full);
+      padding:10px 14px;
+      font-size:13px;
+      font-weight:600;
+      color:var(--text);
+    }
+
+    .bullet-list{
+      display:grid;
+      gap:10px;
+    }
+
+    .bullet-item{
+      display:flex;
+      gap:10px;
+      align-items:flex-start;
+      font-size:14px;
+      color:var(--text-muted);
+      line-height:1.6;
+    }
+
+    .bullet-dot{
+      width:8px;
+      height:8px;
+      border-radius:50%;
+      background:#111;
+      margin-top:8px;
+      flex:0 0 auto;
+    }
+
+    .slot-grid{
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+    }
+
+    .slot-btn{
+      border:1px solid var(--border);
+      background:#fff;
+      border-radius:var(--radius-full);
+      padding:12px 16px;
+      font-size:13px;
+      font-weight:700;
+      color:var(--text);
+    }
+
+    .slot-btn.active{
+      background:#111;
+      color:#fff;
+      border-color:#111;
+    }
+
+    .booking-bar{
+      position:sticky;
+      bottom:0;
+      background:#fff;
+      border-top:1px solid var(--border);
+      padding:16px 22px;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:14px;
+      flex-wrap:wrap;
+    }
+
+    .booking-price{
+      display:flex;
+      flex-direction:column;
+      gap:4px;
+    }
+
+    .booking-price strong{
+      font-size:18px;
+      letter-spacing:-.03em;
+    }
+
+    .booking-price span{
+      font-size:13px;
+      color:var(--text-muted);
+    }
+
+    .booking-actions{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+    }
+
+    .filter-modal-panel{
+      position:absolute;
+      top:50%;
+      left:50%;
+      transform:translate(-50%,-50%);
+      width:min(680px,calc(100% - 24px));
+      background:#fff;
+      border-radius:28px;
+      box-shadow:var(--shadow-lg);
+      animation:popIn .2s ease-out;
+      overflow:hidden;
+    }
+
+    @keyframes popIn{
+      from{transform:translate(-50%,-48%) scale(.98);opacity:.7}
+      to{transform:translate(-50%,-50%) scale(1);opacity:1}
+    }
+
+    .filter-head{
+      padding:18px 22px;
+      border-bottom:1px solid var(--border);
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:10px;
+    }
+
+    .filter-body{
+      padding:20px 22px;
+      display:grid;
+      gap:22px;
+    }
+
+    .filter-section{
+      display:grid;
+      gap:12px;
+    }
+
+    .range-row{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:14px;
+    }
+
+    .field-box{
+      background:#fafafa;
+      border:1px solid var(--border);
+      border-radius:18px;
+      padding:12px 14px;
+      display:flex;
+      flex-direction:column;
+      gap:6px;
+    }
+
+    .field-box label{
+      font-size:11px;
+      text-transform:uppercase;
+      letter-spacing:.08em;
+      font-weight:800;
+      color:var(--text-faint);
+    }
+
+    .field-box input{
+      border:none;
+      background:transparent;
+      outline:none;
+      font-size:15px;
+      font-weight:700;
+      color:var(--text);
+    }
+
+    .checkbox-grid{
+      display:grid;
+      grid-template-columns:repeat(3,minmax(0,1fr));
+      gap:10px;
+    }
+
+    .check-chip{
+      border:1px solid var(--border);
+      background:#fff;
+      border-radius:18px;
+      padding:12px 14px;
+      display:flex;
+      gap:10px;
+      align-items:center;
+      font-size:13px;
+      font-weight:600;
+      color:var(--text);
+    }
+
+    .filter-foot{
+      border-top:1px solid var(--border);
+      padding:18px 22px;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:10px;
+      flex-wrap:wrap;
+    }
+
+    .mobile-bottom-nav{
+      display:none;
+    }
+
+    .hidden{
+      display:none !important;
+    }
+
+    @media (max-width: 1220px){
+      .cards-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+      .search-grid{grid-template-columns:1.5fr 1fr 1fr 1fr}
+      .search-actions{grid-column:1/-1;justify-content:flex-start}
+    }
+
+    @media (max-width: 980px){
+      .app{grid-template-columns:1fr}
+      .sidebar{
+        position:fixed;
+        inset:0 auto 0 0;
+        width:min(82vw,320px);
+        transform:translateX(-100%);
+        transition:transform var(--transition);
+        z-index:120;
+        box-shadow:var(--shadow-lg);
+      }
+      .sidebar.open{transform:translateX(0)}
+      .mobile-menu-btn{display:grid;place-items:center}
+      .topbar{padding:16px}
+      .content{padding:18px 16px 110px}
+      .topbar-row{align-items:flex-start}
+      .topbar-right{display:none}
+      .page-title{font-size:22px}
+      .cards-grid{grid-template-columns:1fr}
+      .requests-grid{grid-template-columns:1fr}
+      .search-grid{grid-template-columns:1fr}
+      .detail-grid,
+      .checkbox-grid,
+      .range-row{grid-template-columns:1fr}
+      .mobile-bottom-nav{
+        position:fixed;
+        left:0;right:0;bottom:0;
+        z-index:90;
+        display:grid;
+        grid-template-columns:repeat(5,1fr);
+        background:rgba(255,255,255,.96);
+        backdrop-filter:blur(12px);
+        border-top:1px solid var(--border);
+        padding:8px 8px calc(8px + env(safe-area-inset-bottom));
+      }
+      .mobile-nav-item{
+        border:none;
+        background:transparent;
+        display:flex;
+        flex-direction:column;
+        align-items:center;
+        justify-content:center;
+        gap:4px;
+        padding:8px 4px;
+        border-radius:16px;
+        color:var(--text-muted);
+        font-size:11px;
+        font-weight:700;
+      }
+      .mobile-nav-item.active{color:#111}
+      .mobile-nav-icon{
+        width:28px;height:28px;border-radius:10px;background:#f2f2f2;display:grid;place-items:center;font-size:14px
+      }
+      .mobile-nav-item.active .mobile-nav-icon{
+        background:#111;color:#fff;
+      }
+      .drawer-panel{width:100%}
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar" id="sidebar">
+      <div class="brand">
+        <div class="brand-mark" aria-label="FourHop logo">
+          <svg viewBox="0 0 24 24" fill="none">
+            <path d="M6 12.5C6 8.6 8.8 5.5 12 5.5C15.2 5.5 18 8.6 18 12.5C18 15.1 16.4 17.1 13.9 18.8C12.8 19.6 11.2 19.6 10.1 18.8C7.6 17.1 6 15.1 6 12.5Z" fill="currentColor"/>
+            <circle cx="12" cy="12.3" r="2.4" fill="white"/>
+          </svg>
+        </div>
+        <div class="brand-meta">
+          <div class="brand-name">FourHop</div>
+          <div class="brand-sub">Desks & meeting rooms</div>
+        </div>
+      </div>
+
+      <div class="sidebar-block">
+        <div class="sidebar-label">Navigation</div>
+        <div class="nav">
+          <button class="nav-item active" data-module="workspace">
+            <div class="icon">⌂</div>
+            <div class="nav-text">
+              <div class="nav-title">Workspace</div>
+              <div class="nav-sub">Find desks & rooms</div>
+            </div>
+          </button>
+
+          <button class="nav-item" data-module="search-results">
+            <div class="icon">⌕</div>
+            <div class="nav-text">
+              <div class="nav-title">Search Results</div>
+              <div class="nav-sub">Filtered inventory</div>
+            </div>
+          </button>
+
+          <button class="nav-item" data-module="booking-requests">
+            <div class="icon">✉</div>
+            <div class="nav-text">
+              <div class="nav-title">Booking Requests</div>
+              <div class="nav-sub">Host approval flow</div>
+            </div>
+          </button>
+
+          <button class="nav-item" data-module="messages">
+            <div class="icon">💬</div>
+            <div class="nav-text">
+              <div class="nav-title">Messages</div>
+              <div class="nav-sub">AI monitored chat</div>
+            </div>
+          </button>
+
+          <button class="nav-item" data-module="profile">
+            <div class="icon">☺</div>
+            <div class="nav-text">
+              <div class="nav-title">Profile</div>
+              <div class="nav-sub">Preferences & host tools</div>
+            </div>
+          </button>
+        </div>
+      </div>
+
+      <div class="sidebar-tip">
+        <div class="tip-title">Workspace first</div>
+        <div class="tip-copy">
+          This demo keeps Workspace live first, while Messages and Profile remain intentionally unfinished until later product phases, matching your current roadmap.[file:43]
+        </div>
+      </div>
+    </aside>
+
+    <main class="main">
+      <header class="topbar">
+        <div class="topbar-row">
+          <div class="topbar-left">
+            <button class="mobile-menu-btn" id="mobileMenuBtn">☰</button>
+            <div class="page-heading">
+              <h1 class="page-title" id="pageTitle">Workspace</h1>
+              <div class="page-subtitle" id="pageSubtitle">
+                Search city, workspace or sector. Compare desks and meeting rooms, then book or request to book.[file:43]
+              </div>
+            </div>
+          </div>
+          <div class="topbar-right">
+            <button class="ghost-btn" id="openFiltersTop">Filters</button>
+            <button class="primary-btn" id="topSearchBtn">Search now</button>
+          </div>
+        </div>
+      </header>
+
+      <div class="content">
+        <div class="content-inner">
+
+          <!-- WORKSPACE -->
+          <section class="module active" id="module-workspace">
+            <div class="search-shell">
+              <div class="segment-switch" id="typeSwitch">
+                <button class="segment-btn active" data-type="desk">Desk</button>
+                <button class="segment-btn" data-type="meeting">Meeting Room</button>
+              </div>
+
+              <div class="search-grid">
+                <div class="search-field">
+                  <label>Where</label>
+                  <input id="searchQuery" type="text" placeholder="Search city, workspace or sector">
+                </div>
+
+                <div class="search-field">
+                  <label>Date</label>
+                  <input id="searchDate" type="date">
+                </div>
+
+                <div class="search-field">
+                  <label>Seats</label>
+                  <select id="searchSeats">
+                    <option value="1">1 seat</option>
+                    <option value="2">2 seats</option>
+                    <option value="4">4 seats</option>
+                    <option value="6">6 seats</option>
+                    <option value="8">8 seats</option>
+                    <option value="10">10+ seats</option>
+                  </select>
+                </div>
+
+                <div class="search-field" id="durationField" style="display:none;">
+                  <label>Duration</label>
+                  <select id="searchDuration">
+                    <option value="1">1 hour</option>
+                    <option value="2" selected>2 hours</option>
+                    <option value="3">3 hours</option>
+                    <option value="4">4 hours</option>
+                    <option value="custom">Custom</option>
+                  </select>
+                </div>
+
+                <div class="search-actions">
+                  <button class="ghost-btn" id="openFiltersBtn">Filters</button>
+                  <button class="primary-btn" id="searchBtn">Search</button>
+                </div>
+              </div>
+
+              <div class="filter-chip-row">
+                <button class="filter-chip active" data-amenity-filter="all">All</button>
+                <button class="filter-chip" data-amenity-filter="Wi-Fi">Wi‑Fi</button>
+                <button class="filter-chip" data-amenity-filter="Parking">Parking</button>
+                <button class="filter-chip" data-amenity-filter="Reception">Reception</button>
+                <button class="filter-chip" data-amenity-filter="CCTV">CCTV</button>
+                <button class="filter-chip" data-amenity-filter="Whiteboard">Whiteboard</button>
+              </div>
+            </div>
+
+            <div class="toolbar">
+              <div class="toolbar-left">
+                <div class="meta-pill" id="resultCountPill">0 results</div>
+                <div class="meta-pill" id="summaryPill">Workspace mode</div>
+                <div class="meta-pill">24/7 support</div>
+              </div>
+              <div class="toolbar-right">
+                <div class="select-wrap">
+                  <select id="sortSelect">
+                    <option value="recommended">Sort by: Recommended</option>
+                    <option value="price-low">Price: Low to High</option>
+                    <option value="price-high">Price: High to Low</option>
+                    <option value="distance">Distance: Nearest First</option>
+                    <option value="top-rated">Top Rated</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            <div class="cards-grid" id="workspaceGrid"></div>
+          </section>
+
+          <!-- SEARCH RESULTS -->
+          <section class="module" id="module-search-results">
+            <div class="toolbar">
+              <div class="toolbar-left">
+                <div class="meta-pill" id="resultsModePill">Search Results</div>
+                <div class="meta-pill" id="resultsMirrorPill">Using current workspace filters</div>
+              </div>
+              <div class="toolbar-right">
+                <button class="ghost-btn" id="backToWorkspaceBtn">Back to Workspace</button>
+              </div>
+            </div>
+            <div class="cards-grid" id="resultsGrid"></div>
+          </section>
+
+          <!-- BOOKING REQUESTS -->
+          <section class="module" id="module-booking-requests">
+            <div class="toolbar">
+              <div class="toolbar-left">
+                <div class="meta-pill">Request to Book queue</div>
+                <div class="meta-pill" id="requestCountPill">0 active requests</div>
+              </div>
+            </div>
+            <div class="requests-grid" id="requestsGrid"></div>
+          </section>
+
+          <!-- MESSAGES -->
+          <section class="module" id="module-messages">
+            <div class="in-progress">
+              <div class="progress-card">
+                <div class="progress-title">Messages in progress</div>
+                <div class="progress-copy">
+                  This section will later include guest ↔ host chat, plus AI-based monitoring to block contact sharing and discourage off-platform bookings, exactly as described in your spec.[file:43]
+                </div>
+                <div class="progress-tag">Module not live yet</div>
+              </div>
+            </div>
+          </section>
+
+          <!-- PROFILE -->
+          <section class="module" id="module-profile">
+            <div class="in-progress">
+              <div class="progress-card">
+                <div class="progress-title">Profile in progress</div>
+                <div class="progress-copy">
+                  Profile will later contain badge logic like Top Rated, account settings, host tools, and booking history. For now it stays intentionally unavailable to keep the demo focused on Workspace first.[file:43]
+                </div>
+                <div class="progress-tag">Coming soon</div>
+              </div>
+            </div>
+          </section>
+
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- MOBILE NAV -->
+  <nav class="mobile-bottom-nav" id="mobileBottomNav">
+    <button class="mobile-nav-item active" data-module="workspace">
+      <div class="mobile-nav-icon">⌂</div>
+      <span>Workspace</span>
+    </button>
+    <button class="mobile-nav-item" data-module="search-results">
+      <div class="mobile-nav-icon">⌕</div>
+      <span>Results</span>
+    </button>
+    <button class="mobile-nav-item" data-module="booking-requests">
+      <div class="mobile-nav-icon">✉</div>
+      <span>Requests</span>
+    </button>
+    <button class="mobile-nav-item" data-module="messages">
+      <div class="mobile-nav-icon">💬</div>
+      <span>Messages</span>
+    </button>
+    <button class="mobile-nav-item" data-module="profile">
+      <div class="mobile-nav-icon">☺</div>
+      <span>Profile</span>
+    </button>
+  </nav>
+
+  <!-- FILTER MODAL -->
+  <div class="modal" id="filterModal">
+    <div class="overlay" data-close="filterModal"></div>
+    <div class="filter-modal-panel">
+      <div class="filter-head">
+        <div>
+          <div class="drawer-title" style="font-size:20px;">Filters</div>
+          <div class="drawer-sub">Price range, distance, amenities, and duration controls.[file:43]</div>
+        </div>
+        <button class="close-btn" data-close="filterModal">×</button>
+      </div>
+
+      <div class="filter-body">
+        <div class="filter-section">
+          <div class="section-title">Price range</div>
+          <div class="range-row">
+            <div class="field-box">
+              <label>Minimum</label>
+              <input id="minPriceInput" type="number" value="0" min="0">
+            </div>
+            <div class="field-box">
+              <label>Maximum</label>
+              <input id="maxPriceInput" type="number" value="5000" min="0">
+            </div>
+          </div>
+        </div>
+
+        <div class="filter-section">
+          <div class="section-title">Distance</div>
+          <div class="field-box">
+            <label>Within km</label>
+            <input id="distanceInput" type="number" value="10" min="1">
+          </div>
+        </div>
+
+        <div class="filter-section">
+          <div class="section-title">Amenities</div>
+          <div class="checkbox-grid" id="amenitiesGrid"></div>
+        </div>
+
+        <div class="filter-section" id="durationFilterSection" style="display:none;">
+          <div class="section-title">Meeting duration</div>
+          <div class="checkbox-grid">
+            <label class="check-chip"><input type="radio" name="meetingDurationFilter" value="1"> 1 Hour</label>
+            <label class="check-chip"><input type="radio" name="meetingDurationFilter" value="2" checked> 2 Hours</label>
+            <label class="check-chip"><input type="radio" name="meetingDurationFilter" value="3"> 3 Hours</label>
+            <label class="check-chip"><input type="radio" name="meetingDurationFilter" value="4"> 4 Hours</label>
+            <label class="check-chip"><input type="radio" name="meetingDurationFilter" value="custom"> Custom</label>
+          </div>
+        </div>
+      </div>
+
+      <div class="filter-foot">
+        <button class="soft-btn" id="clearFiltersBtn">Clear all</button>
+        <button class="primary-btn" id="applyFiltersBtn">Apply</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- DETAILS DRAWER -->
+  <div class="drawer" id="detailsDrawer">
+    <div class="overlay" data-close="detailsDrawer"></div>
+    <div class="drawer-panel">
+      <div class="drawer-head">
+        <div>
+          <h2 class="drawer-title" id="drawerTitle">Workspace details</h2>
+          <div class="drawer-sub" id="drawerSub">Hosted by FourHop partner</div>
+        </div>
+        <button class="close-btn" data-close="detailsDrawer">×</button>
+      </div>
+
+      <div class="drawer-body">
+        <div class="detail-media">
+          <div class="detail-media-toolbar">
+            <div class="detail-chip" id="drawerMediaType">Desk</div>
+            <div style="display:flex; gap:10px;">
+              <button class="icon-circle" title="Wishlist">♡</button>
+              <button class="icon-circle" title="Share">↗</button>
+            </div>
+          </div>
+          <div class="detail-media-footer">
+            <div style="display:flex; gap:8px;">
+              <div class="mini-photo"></div>
+              <div class="mini-photo"></div>
+              <div class="mini-photo"></div>
+            </div>
+            <div class="detail-chip">Photos + video</div>
+          </div>
+        </div>
+
+        <div class="detail-grid">
+          <div class="detail-box">
+            <div class="detail-box-label">Location</div>
+            <div class="detail-box-value" id="drawerLocation"></div>
+          </div>
+          <div class="detail-box">
+            <div class="detail-box-label">Reception hours</div>
+            <div class="detail-box-value" id="drawerHours"></div>
+          </div>
+          <div class="detail-box">
+            <div class="detail-box-label">Reviews</div>
+            <div class="detail-box-value" id="drawerRating"></div>
+          </div>
+          <div class="detail-box">
+            <div class="detail-box-label">Pricing</div>
+            <div class="detail-box-value" id="drawerPricing"></div>
+          </div>
+        </div>
+
+        <div>
+          <div class="section-title">About the space</div>
+          <div class="section-copy" id="drawerAbout"></div>
+        </div>
+
+        <div>
+          <div class="section-title">Amenities</div>
+          <div class="amenities" id="drawerAmenities"></div>
+        </div>
+
+        <div>
+          <div class="section-title">Workspace rules / arrival guide</div>
+          <div class="bullet-list" id="drawerRules"></div>
+        </div>
+
+        <div>
+          <div class="section-title">Cancellation policy</div>
+          <div class="section-copy" id="drawerCancellation"></div>
+        </div>
+
+        <div id="slotSection" class="hidden">
+          <div class="section-title">Available time slots</div>
+          <div class="section-copy" style="margin-bottom:12px;">
+            Meeting room slots below are generated from duration, reception hours, and booking windows, matching your flow concept.[file:43]
+          </div>
+          <div class="slot-grid" id="slotGrid"></div>
+        </div>
+      </div>
+
+      <div class="booking-bar">
+        <div class="booking-price">
+          <strong id="drawerPriceMain">₹0 / day</strong>
+          <span id="drawerPriceSub">1 desk / 1 person</span>
+        </div>
+        <div class="booking-actions">
+          <button class="ghost-btn" id="requestBookBtn">Request to book</button>
+          <button class="primary-btn" id="bookNowBtn">Book now</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const listings = [
+      {
+        id: 1,
+        type: "desk",
+        title: "WorkHub Desk Floor",
+        city: "Noida",
+        sector: "Sector 18",
+        distance: 2.3,
+        rating: 4.2,
+        reviews: 48,
+        host: "Hosted by WorkHub",
+        receptionHours: "8 AM - 8 PM",
+        price: 399,
+        priceUnit: "day",
+        seats: 8,
+        autoAccept: true,
+        topRated: false,
+        description: "Comfortable shared desks with quiet corners, stable Wi‑Fi, pantry access and casual lounge seating for focused workdays.",
+        amenities: ["Wi-Fi", "AC", "Power Backup", "Tea/Coffee", "Reception", "Parking"],
+        rules: ["Enter from Gate 2", "Reception on 1st Floor", "Show booking confirmation", "Desk allocated at reception", "Valid ID Required", "Maintain Silence"],
+        cancellation: "Flexible cancellation. Cancel within the allowed window for a smoother refund process.",
+        area: "2,600 sq. ft."
+      },
+      {
+        id: 2,
+        type: "desk",
+        title: "Office Spot Flex Desk",
+        city: "Gurugram",
+        sector: "DLF Phase 2",
+        distance: 4.1,
+        rating: 4.6,
+        reviews: 82,
+        host: "Hosted by Office Spot",
+        receptionHours: "9 AM - 7 PM",
+        price: 520,
+        priceUnit: "day",
+        seats: 14,
+        autoAccept: false,
+        topRated: true,
+        description: "Premium flex desks for solo operators and founders, with front-desk support, CCTV, high-speed internet, and all-day access during reception hours.",
+        amenities: ["Wi-Fi", "AC", "Power Backup", "Reception", "CCTV", "Parking", "Tea/Coffee"],
+        rules: ["No Smoking", "Valid ID Required", "Maintain Silence", "Report at reception before check-in"],
+        cancellation: "Flexible cancellation. Host approval may apply depending on selected booking mode.",
+        area: "3,100 sq. ft."
+      },
+      {
+        id: 3,
+        type: "desk",
+        title: "CoWork Hive Shared Desks",
+        city: "Noida",
+        sector: "Sector 62",
+        distance: 5.8,
+        rating: 3.9,
+        reviews: 22,
+        host: "Hosted by CoWork Hive",
+        receptionHours: "9 AM - 6 PM",
+        price: 450,
+        priceUnit: "day",
+        seats: 20,
+        autoAccept: true,
+        topRated: false,
+        description: "Affordable day desks with charging points, tea/coffee, and reception-led seating allocation for casual and recurring usage.",
+        amenities: ["Wi-Fi", "Charging", "Tea/Coffee", "Reception"],
+        rules: ["No Loud Calls", "Valid ID Required", "Use allocated seat only"],
+        cancellation: "Flexible cancellation with standard host policy.",
+        area: "2,200 sq. ft."
+      },
+      {
+        id: 4,
+        type: "meeting",
+        title: "Tech Hub Office",
+        city: "Noida",
+        sector: "Sector 32",
+        distance: 3.0,
+        rating: 4.8,
+        reviews: 120,
+        host: "Hosted by Tech Hub",
+        receptionHours: "9 AM - 6 PM",
+        price: 900,
+        priceUnit: "hour",
+        seats: 8,
+        autoAccept: false,
+        topRated: true,
+        description: "A professional meeting room with TV/display, screen sharing, whiteboard, and conferencing setup. Best suited for team discussions and client calls.",
+        amenities: ["Wi-Fi", "AC", "Power Backup", "TV/Display", "Whiteboard", "HDMI", "Video Conferencing", "Tea/Coffee", "Pantry", "Wheelchair Access", "Parking", "Reception"],
+        rules: ["No Smoking", "Valid ID Required", "Maintain Silence outside meeting room", "Check in with reception"],
+        cancellation: "Flexible cancellation. Minimum recommended booking duration is 2 hours.[file:43]",
+        area: "480 sq. ft."
+      },
+      {
+        id: 5,
+        type: "meeting",
+        title: "Tech Bar Office",
+        city: "Noida",
+        sector: "Sector 31",
+        distance: 3.8,
+        rating: 4.6,
+        reviews: 85,
+        host: "Hosted by Tech Bar",
+        receptionHours: "10 AM - 8 PM",
+        price: 750,
+        priceUnit: "hour",
+        seats: 6,
+        autoAccept: true,
+        topRated: false,
+        description: "Warm, compact meeting room with screen sharing and front desk support. Great for interviews, sales calls, and small presentations.",
+        amenities: ["Wi-Fi", "AC", "TV/Display", "Whiteboard", "Tea/Coffee", "Reception", "CCTV"],
+        rules: ["Arrive 10 minutes early", "Valid ID Required", "No external food without approval"],
+        cancellation: "Flexible cancellation with host-defined buffer between sessions.[file:43]",
+        area: "360 sq. ft."
+      },
+      {
+        id: 6,
+        type: "meeting",
+        title: "Prime Boardroom Suite",
+        city: "Gurugram",
+        sector: "Golf Course Road",
+        distance: 6.4,
+        rating: 4.9,
+        reviews: 210,
+        host: "Hosted by Prime Works",
+        receptionHours: "8 AM - 9 PM",
+        price: 1300,
+        priceUnit: "hour",
+        seats: 12,
+        autoAccept: false,
+        topRated: true,
+        description: "Larger boardroom with full conferencing setup, screen share, lounge access, and premium service touchpoints for enterprise teams.",
+        amenities: ["Wi-Fi", "AC", "Power Backup", "TV/Display", "Whiteboard", "HDMI", "Video Conferencing", "Tea/Coffee", "Pantry", "Reception", "CCTV", "Parking"],
+        rules: ["No Smoking", "Valid ID Required", "Host may approve large-duration requests manually"],
+        cancellation: "Flexible cancellation. Request-to-book may be mandatory for extended durations.[file:43]",
+        area: "690 sq. ft."
+      }
+    ];
+
+    const state = {
+      activeModule: "workspace",
+      type: "desk",
+      query: "",
+      date: "",
+      seats: 1,
+      duration: "2",
+      priceMin: 0,
+      priceMax: 5000,
+      maxDistance: 10,
+      amenityQuickFilter: "all",
+      selectedAmenities: [],
+      sortBy: "recommended",
+      selectedListing: null,
+      selectedSlot: null,
+      bookingRequests: [
+        {
+          id: "REQ-1001",
+          title: "Office Spot Flex Desk",
+          user: "Aman Verma",
+          city: "Gurugram",
+          seats: 2,
+          duration: "1 day",
+          status: "pending",
+          mode: "Request to Book"
+        },
+        {
+          id: "REQ-1002",
+          title: "Tech Hub Office",
+          user: "Riya Sharma",
+          city: "Noida",
+          seats: 6,
+          duration: "2 hours",
+          status: "approved",
+          mode: "Request to Book"
+        },
+        {
+          id: "REQ-1003",
+          title: "CoWork Hive Shared Desks",
+          user: "Karan Mehta",
+          city: "Noida",
+          seats: 1,
+          duration: "1 day",
+          status: "auto",
+          mode: "Auto Accept"
+        }
+      ]
+    };
+
+    const pageTitle = document.getElementById("pageTitle");
+    const pageSubtitle = document.getElementById("pageSubtitle");
+    const navItems = [...document.querySelectorAll(".nav-item")];
+    const mobileNavItems = [...document.querySelectorAll(".mobile-nav-item")];
+    const modules = [...document.querySelectorAll(".module")];
+    const workspaceGrid = document.getElementById("workspaceGrid");
+    const resultsGrid = document.getElementById("resultsGrid");
+    const requestsGrid = document.getElementById("requestsGrid");
+    const resultCountPill = document.getElementById("resultCountPill");
+    const summaryPill = document.getElementById("summaryPill");
+    const resultsModePill = document.getElementById("resultsModePill");
+    const requestCountPill = document.getElementById("requestCountPill");
+    const searchQuery = document.getElementById("searchQuery");
+    const searchDate = document.getElementById("searchDate");
+    const searchSeats = document.getElementById("searchSeats");
+    const searchDuration = document.getElementById("searchDuration");
+    const durationField = document.getElementById("durationField");
+    const sortSelect = document.getElementById("sortSelect");
+    const typeSwitch = document.getElementById("typeSwitch");
+    const filterModal = document.getElementById("filterModal");
+    const detailsDrawer = document.getElementById("detailsDrawer");
+    const sidebar = document.getElementById("sidebar");
+    const mobileMenuBtn = document.getElementById("mobileMenuBtn");
+    const amenitiesGrid = document.getElementById("amenitiesGrid");
+
+    const allAmenities = [
+      "Wi-Fi", "AC", "Power Backup", "Parking", "Tea/Coffee", "Reception",
+      "CCTV", "TV/Display", "Whiteboard", "HDMI", "Video Conferencing",
+      "Pantry", "Wheelchair Access", "Charging"
+    ];
+
+    function setModule(moduleName){
+      state.activeModule = moduleName;
+
+      navItems.forEach(item => {
+        item.classList.toggle("active", item.dataset.module === moduleName);
+      });
+      mobileNavItems.forEach(item => {
+        item.classList.toggle("active", item.dataset.module === moduleName);
+      });
+      modules.forEach(section => {
+        section.classList.toggle("active", section.id === `module-${moduleName}`);
+      });
+
+      sidebar.classList.remove("open");
+
+      const titleMap = {
+        "workspace": "Workspace",
+        "search-results": "Search Results",
+        "booking-requests": "Booking Requests",
+        "messages": "Messages",
+        "profile": "Profile"
+      };
+
+      const subtitleMap = {
+        "workspace": "Search city, workspace or sector. Compare desks and meeting rooms, then book or request to book.[file:43]",
+        "search-results": "Filtered inventory based on your current workspace search and filter selections.",
+        "booking-requests": "Review request-to-book flow and auto-accept booking states from the same interface.[file:43]",
+        "messages": "Guest and host chat will be added later with AI monitoring safeguards.[file:43]",
+        "profile": "Account, host tools, badges, and settings will be added here later.[file:43]"
+      };
+
+      pageTitle.textContent = titleMap[moduleName] || "FourHop";
+      pageSubtitle.textContent = subtitleMap[moduleName] || "";
+    }
+
+    function getFilteredListings(){
+      let items = listings.filter(item => item.type === state.type);
+
+      if(state.query.trim()){
+        const q = state.query.trim().toLowerCase();
+        items = items.filter(item =>
+          item.title.toLowerCase().includes(q) ||
+          item.city.toLowerCase().includes(q) ||
+          item.sector.toLowerCase().includes(q)
+        );
+      }
+
+      items = items.filter(item => item.seats >= Number(state.seats));
+      items = items.filter(item => item.distance <= Number(state.maxDistance));
+      items = items.filter(item => item.price >= Number(state.priceMin) && item.price <= Number(state.priceMax));
+
+      if(state.amenityQuickFilter !== "all"){
+        items = items.filter(item => item.amenities.includes(state.amenityQuickFilter));
+      }
+
+      if(state.selectedAmenities.length){
+        items = items.filter(item =>
+          state.selectedAmenities.every(am => item.amenities.includes(am))
+        );
+      }
+
+      if(state.type === "meeting"){
+        const minDuration = state.duration;
+        if(minDuration && minDuration !== "custom"){
+          items = items.filter(() => true);
+        }
+      }
+
+      switch(state.sortBy){
+        case "price-low":
+          items.sort((a,b) => a.price - b.price);
+          break;
+        case "price-high":
+          items.sort((a,b) => b.price - a.price);
+          break;
+        case "distance":
+          items.sort((a,b) => a.distance - b.distance);
+          break;
+        case "top-rated":
+          items.sort((a,b) => b.rating - a.rating || b.reviews - a.reviews);
+          break;
+        default:
+          items.sort((a,b) => {
+            const scoreA = (a.rating * 3) + (a.topRated ? 2 : 0) - (a.distance * .25) + (a.reviews * .01);
+            const scoreB = (b.rating * 3) + (b.topRated ? 2 : 0) - (b.distance * .25) + (b.reviews * .01);
+            return scoreB - scoreA;
+          });
+      }
+      return items;
+    }
+
+    function renderListingCard(item){
+      const priceLabel = item.priceUnit === "day"
+        ? `₹${item.price.toLocaleString("en-IN")} / day`
+        : `₹${item.price.toLocaleString("en-IN")} / hour`;
+
+      const subPrice = item.type === "desk"
+        ? `${state.seats} desk / ${state.seats} person${Number(state.seats) > 1 ? "s" : ""}`
+        : `${state.seats} seat${Number(state.seats) > 1 ? "s" : ""} · ${state.duration === "custom" ? "custom" : state.duration + " hour"} duration`;
+
+      const card = document.createElement("article");
+      card.className = "listing-card";
+      card.innerHTML = `
+        <div class="listing-media">
+          <div class="media-badge-row">
+            <div class="media-badge">${item.type === "desk" ? "Desk selected" : "Meeting room selected"}</div>
+            <button class="icon-circle" aria-label="Wishlist">♡</button>
+          </div>
+          <div class="media-footer">
+            <div class="mini-photos">
+              <div class="mini-photo"></div>
+              <div class="mini-photo"></div>
+              <div class="mini-photo"></div>
+            </div>
+            <div class="media-badge">Photos + video</div>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="card-topline">
+            <div class="card-title-wrap">
+              <div class="card-kicker">${item.host}</div>
+              <h3 class="card-title">${item.title}</h3>
+            </div>
+            <div class="card-rating"><span class="star">★</span>${item.rating} (${item.reviews})</div>
+          </div>
+          <div class="card-location">${item.sector}, ${item.city} • ${item.distance} km away</div>
+          <div class="card-hours">${item.receptionHours} • ${item.type === "desk" ? "Per day pricing" : "Per hour pricing"}</div>
+          <div class="card-description">${item.description}</div>
+          <div class="card-bottom">
+            <div class="price-block">
+              <div class="price-main">${priceLabel}</div>
+              <div class="price-sub">${subPrice}</div>
+            </div>
+            ${item.topRated ? '<div class="top-rated">Top Rated</div>' : ''}
+          </div>
+        </div>
+      `;
+
+      card.addEventListener("click", (e) => {
+        if(e.target.closest(".icon-circle")) return;
+        openDetails(item);
+      });
+
+      return card;
+    }
+
+    function renderWorkspace(){
+      const filtered = getFilteredListings();
+      workspaceGrid.innerHTML = "";
+      filtered.forEach(item => workspaceGrid.appendChild(renderListingCard(item)));
+
+      resultCountPill.textContent = `${filtered.length} result${filtered.length === 1 ? "" : "s"}`;
+      summaryPill.textContent = state.type === "desk"
+        ? `Desk · ${state.seats} seat${Number(state.seats) > 1 ? "s" : ""}`
+        : `Meeting room · ${state.seats} seat${Number(state.seats) > 1 ? "s" : ""} · ${state.duration === "custom" ? "Custom" : state.duration + "h"}`;
+    }
+
+    function renderResults(){
+      const filtered = getFilteredListings();
+      resultsGrid.innerHTML = "";
+      filtered.forEach(item => resultsGrid.appendChild(renderListingCard(item)));
+      resultsModePill.textContent = `${filtered.length} search result${filtered.length === 1 ? "" : "s"}`;
+    }
+
+    function renderRequests(){
+      requestsGrid.innerHTML = "";
+      requestCountPill.textContent = `${state.bookingRequests.length} active requests`;
+
+      state.bookingRequests.forEach(req => {
+        const statusClass = req.status === "pending"
+          ? "status-pending"
+          : req.status === "approved"
+            ? "status-approved"
+            : "status-auto";
+
+        const statusText = req.status === "pending"
+          ? "Pending review"
+          : req.status === "approved"
+            ? "Approved"
+            : "Auto accepted";
+
+        const card = document.createElement("div");
+        card.className = "request-card";
+        card.innerHTML = `
+          <div class="request-header">
+            <div>
+              <h3 class="request-title">${req.title}</h3>
+              <div class="card-location">${req.mode}</div>
+            </div>
+            <div class="status-badge ${statusClass}">${statusText}</div>
+          </div>
+          <div class="request-lines">
+            <div class="request-line"><span>Request ID</span><strong>${req.id}</strong></div>
+            <div class="request-line"><span>Guest</span><strong>${req.user}</strong></div>
+            <div class="request-line"><span>City</span><strong>${req.city}</strong></div>
+            <div class="request-line"><span>Seats</span><strong>${req.seats}</strong></div>
+            <div class="request-line"><span>Duration</span><strong>${req.duration}</strong></div>
+          </div>
+          <div class="request-actions">
+            <button class="ghost-btn" data-action="approve">Approve</button>
+            <button class="soft-btn" data-action="message">Message</button>
+            <button class="primary-btn" data-action="mark">${req.status === "approved" ? "Mark paid" : "Review request"}</button>
+          </div>
+        `;
+
+        card.querySelector('[data-action="approve"]').addEventListener("click", () => {
+          req.status = "approved";
+          renderRequests();
+        });
+
+        card.querySelector('[data-action="message"]').addEventListener("click", () => {
+          setModule("messages");
+        });
+
+        card.querySelector('[data-action="mark"]').addEventListener("click", () => {
+          if(req.status === "pending") req.status = "approved";
+          else req.status = "auto";
+          renderRequests();
+        });
+
+        requestsGrid.appendChild(card);
+      });
+    }
+
+    function buildAmenitiesModal(){
+      amenitiesGrid.innerHTML = "";
+      allAmenities.forEach(am => {
+        const label = document.createElement("label");
+        label.className = "check-chip";
+        label.innerHTML = `<input type="checkbox" value="${am}" ${state.selectedAmenities.includes(am) ? "checked" : ""}> ${am}`;
+        amenitiesGrid.appendChild(label);
+      });
+    }
+
+    function openModal(id){
+      document.getElementById(id).classList.add("open");
+      if(id === "filterModal"){
+        document.getElementById("durationFilterSection").style.display = state.type === "meeting" ? "grid" : "none";
+      }
+    }
+
+    function closeModal(id){
+      document.getElementById(id).classList.remove("open");
+    }
+
+    function parseHourLabel(text){
+      const [part1, part2] = text.split("-");
+      const start = parseSingleHour(part1.trim());
+      const end = parseSingleHour(part2.trim());
+      return { start, end };
+    }
+
+    function parseSingleHour(str){
+      const parts = str.split(" ");
+      let hour = parseInt(parts[0], 10);
+      const suffix = (parts[1] || "").toUpperCase();
+      if(suffix === "PM" && hour !== 12) hour += 12;
+      if(suffix === "AM" && hour === 12) hour = 0;
+      return hour;
+    }
+
+    function formatHour(hour){
+      const suffix = hour >= 12 ? "PM" : "AM";
+      let h = hour % 12;
+      if(h === 0) h = 12;
+      return `${h}:00 ${suffix}`;
+    }
+
+    function generateSlots(hoursText, duration){
+      const { start, end } = parseHourLabel(hoursText);
+      const slots = [];
+      const durationNum = duration === "custom" ? 2 : Number(duration);
+      let current = start;
+      while(current + durationNum <= end){
+        const slotEnd = current + durationNum;
+        slots.push(`${formatHour(current)} – ${formatHour(slotEnd)}`);
+        current += durationNum < 3 ? 2.5 : durationNum + 0.5;
+      }
+      return slots.slice(0, 5);
+    }
+
+    function openDetails(item){
+      state.selectedListing = item;
+      state.selectedSlot = null;
+
+      document.getElementById("drawerTitle").textContent = item.title;
+      document.getElementById("drawerSub").textContent = `${item.host} • ${item.rating}★ (${item.reviews} reviews)`;
+      document.getElementById("drawerMediaType").textContent = item.type === "desk" ? "Desk" : "Meeting Room";
+      document.getElementById("drawerLocation").textContent = `${item.sector}, ${item.city} • ${item.distance} km away • Map preview`;
+      document.getElementById("drawerHours").textContent = item.receptionHours;
+      document.getElementById("drawerRating").textContent = `${item.rating} out of 5 · ${item.reviews} total reviews`;
+      document.getElementById("drawerPricing").textContent = item.priceUnit === "day"
+        ? `₹${item.price.toLocaleString("en-IN")} per day`
+        : `₹${item.price.toLocaleString("en-IN")} per hour`;
+      document.getElementById("drawerAbout").textContent = `${item.description} Total area: ${item.area}`;
+      document.getElementById("drawerCancellation").textContent = item.cancellation;
+      document.getElementById("drawerPriceMain").textContent = item.priceUnit === "day"
+        ? `₹${item.price.toLocaleString("en-IN")} / day`
+        : `₹${item.price.toLocaleString("en-IN")} / hour`;
+
+      document.getElementById("drawerPriceSub").textContent = item.type === "desk"
+        ? `${state.seats} desk / ${state.seats} person${Number(state.seats) > 1 ? "s" : ""}`
+        : `${state.seats} meeting seat${Number(state.seats) > 1 ? "s" : ""} · ${state.duration === "custom" ? "custom duration" : state.duration + " hour"} selected`;
+
+      const amenitiesWrap = document.getElementById("drawerAmenities");
+      amenitiesWrap.innerHTML = "";
+      item.amenities.forEach(am => {
+        const el = document.createElement("div");
+        el.className = "amenity";
+        el.textContent = am;
+        amenitiesWrap.appendChild(el);
+      });
+
+      const rulesWrap = document.getElementById("drawerRules");
+      rulesWrap.innerHTML = "";
+      item.rules.forEach(rule => {
+        const el = document.createElement("div");
+        el.className = "bullet-item";
+        el.innerHTML = `<div class="bullet-dot"></div><div>${rule}</div>`;
+        rulesWrap.appendChild(el);
+      });
+
+      const slotSection = document.getElementById("slotSection");
+      const slotGrid = document.getElementById("slotGrid");
+      slotGrid.innerHTML = "";
+
+      if(item.type === "meeting"){
+        slotSection.classList.remove("hidden");
+        const slots = generateSlots(item.receptionHours, state.duration || "2");
+        slots.forEach(slot => {
+          const btn = document.createElement("button");
+          btn.className = "slot-btn";
+          btn.textContent = slot;
+          btn.addEventListener("click", () => {
+            state.selectedSlot = slot;
+            [...slotGrid.querySelectorAll(".slot-btn")].forEach(x => x.classList.remove("active"));
+            btn.classList.add("active");
+          });
+          slotGrid.appendChild(btn);
+        });
+      } else {
+        slotSection.classList.add("hidden");
+      }
+
+      document.getElementById("requestBookBtn").textContent = item.autoAccept ? "Auto accept booking" : "Request to book";
+      openModal("detailsDrawer");
+    }
+
+    function syncInputsToState(){
+      state.query = searchQuery.value;
+      state.date = searchDate.value;
+      state.seats = Number(searchSeats.value);
+      state.duration = searchDuration.value;
+      state.sortBy = sortSelect.value;
+    }
+
+    function applySearch(){
+      syncInputsToState();
+      renderWorkspace();
+      renderResults();
+    }
+
+    function bindEvents(){
+      navItems.forEach(btn => {
+        btn.addEventListener("click", () => setModule(btn.dataset.module));
+      });
+
+      mobileNavItems.forEach(btn => {
+        btn.addEventListener("click", () => setModule(btn.dataset.module));
+      });
+
+      typeSwitch.addEventListener("click", e => {
+        const btn = e.target.closest(".segment-btn");
+        if(!btn) return;
+        state.type = btn.dataset.type;
+        [...typeSwitch.querySelectorAll(".segment-btn")].forEach(x => x.classList.remove("active"));
+        btn.classList.add("active");
+        durationField.style.display = state.type === "meeting" ? "flex" : "none";
+        applySearch();
+      });
+
+      document.getElementById("searchBtn").addEventListener("click", applySearch);
+      document.getElementById("topSearchBtn").addEventListener("click", applySearch);
+      document.getElementById("openFiltersBtn").addEventListener("click", () => {
+        buildAmenitiesModal();
+        openModal("filterModal");
+      });
+      document.getElementById("openFiltersTop").addEventListener("click", () => {
+        buildAmenitiesModal();
+        openModal("filterModal");
+      });
+
+      document.querySelectorAll("[data-close]").forEach(el => {
+        el.addEventListener("click", () => closeModal(el.dataset.close));
+      });
+
+      document.querySelectorAll(".filter-chip[data-amenity-filter]").forEach(chip => {
+        chip.addEventListener("click", () => {
+          document.querySelectorAll(".filter-chip[data-amenity-filter]").forEach(c => c.classList.remove("active"));
+          chip.classList.add("active");
+          state.amenityQuickFilter = chip.dataset.amenityFilter;
+          renderWorkspace();
+          renderResults();
+        });
+      });
+
+      sortSelect.addEventListener("change", () => {
+        state.sortBy = sortSelect.value;
+        renderWorkspace();
+        renderResults();
+      });
+
+      document.getElementById("applyFiltersBtn").addEventListener("click", () => {
+        state.priceMin = Number(document.getElementById("minPriceInput").value || 0);
+        state.priceMax = Number(document.getElementById("maxPriceInput").value || 5000);
+        state.maxDistance = Number(document.getElementById("distanceInput").value || 10);
+
+        const checked = [...amenitiesGrid.querySelectorAll('input[type="checkbox"]:checked')].map(x => x.value);
+        state.selectedAmenities = checked;
+
+        const durationRadio = document.querySelector('input[name="meetingDurationFilter"]:checked');
+        if(durationRadio) state.duration = durationRadio.value;
+        searchDuration.value = state.duration;
+
+        closeModal("filterModal");
+        renderWorkspace();
+        renderResults();
+      });
+
+      document.getElementById("clearFiltersBtn").addEventListener("click", () => {
+        state.priceMin = 0;
+        state.priceMax = 5000;
+        state.maxDistance = 10;
+        state.selectedAmenities = [];
+        document.getElementById("minPriceInput").value = 0;
+        document.getElementById("maxPriceInput").value = 5000;
+        document.getElementById("distanceInput").value = 10;
+        buildAmenitiesModal();
+      });
+
+      document.getElementById("bookNowBtn").addEventListener("click", () => {
+        if(!state.selectedListing) return;
+        const req = {
+          id: `REQ-${Math.floor(Math.random()*9000)+1000}`,
+          title: state.selectedListing.title,
+          user: "Demo Guest",
+          city: state.selectedListing.city,
+          seats: state.seats,
+          duration: state.selectedListing.type === "desk"
+            ? "1 day"
+            : state.duration === "custom" ? "Custom" : `${state.duration} hours`,
+          status: state.selectedListing.autoAccept ? "auto" : "pending",
+          mode: state.selectedListing.autoAccept ? "Auto Accept" : "Request to Book"
+        };
+        state.bookingRequests.unshift(req);
+        renderRequests();
+        closeModal("detailsDrawer");
+        setModule("booking-requests");
+      });
+
+      document.getElementById("requestBookBtn").addEventListener("click", () => {
+        if(!state.selectedListing) return;
+        const req = {
+          id: `REQ-${Math.floor(Math.random()*9000)+1000}`,
+          title: state.selectedListing.title,
+          user: "Demo Guest",
+          city: state.selectedListing.city,
+          seats: state.seats,
+          duration: state.selectedListing.type === "desk"
+            ? "1 day"
+            : state.duration === "custom" ? "Custom" : `${state.duration} hours`,
+          status: state.selectedListing.autoAccept ? "auto" : "pending",
+          mode: state.selectedListing.autoAccept ? "Auto Accept" : "Request to Book"
+        };
+        state.bookingRequests.unshift(req);
+        renderRequests();
+        closeModal("detailsDrawer");
+        setModule("booking-requests");
+      });
+
+      document.getElementById("backToWorkspaceBtn").addEventListener("click", () => {
+        setModule("workspace");
+      });
+
+      searchQuery.addEventListener("input", () => {
+        state.query = searchQuery.value;
+        renderWorkspace();
+        renderResults();
+      });
+
+      searchSeats.addEventListener("change", () => {
+        state.seats = Number(searchSeats.value);
+        renderWorkspace();
+        renderResults();
+      });
+
+      searchDuration.addEventListener("change", () => {
+        state.duration = searchDuration.value;
+        renderWorkspace();
+        renderResults();
+      });
+
+      mobileMenuBtn.addEventListener("click", () => {
+        sidebar.classList.toggle("open");
+      });
+
+      window.addEventListener("keydown", e => {
+        if(e.key === "Escape"){
+          closeModal("filterModal");
+          closeModal("detailsDrawer");
+          sidebar.classList.remove("open");
+        }
+      });
+    }
+
+    function init(){
+      document.getElementById("searchDate").value = new Date().toISOString().slice(0,10);
+      document.getElementById("minPriceInput").value = state.priceMin;
+      document.getElementById("maxPriceInput").value = state.priceMax;
+      document.getElementById("distanceInput").value = state.maxDistance;
+      buildAmenitiesModal();
+      durationField.style.display = state.type === "meeting" ? "flex" : "none";
+      bindEvents();
+      renderWorkspace();
+      renderResults();
+      renderRequests();
+    }
+
+    init();
+  </script>
+</body>
+</html>
